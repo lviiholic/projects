@@ -1,3 +1,3 @@
 # projects
 
-##this is a personal project repo.
+## this is a personal project repo.
