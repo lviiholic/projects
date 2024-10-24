@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Push Notification Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/DOMPurify/2.3.3/purify.min.js"></script>
     <style>
         body {
             font-family: "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -58,22 +56,6 @@
             justify-content: center;
             gap: 0.5rem;
         }
-        .markdown-preview {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            border: 1px solid #e5e7eb;
-        }
-        .markdown-preview h1 { font-size: 1.5em; font-weight: bold; margin: 1em 0; }
-        .markdown-preview h2 { font-size: 1.3em; font-weight: bold; margin: 0.8em 0; }
-        .markdown-preview h3 { font-size: 1.1em; font-weight: bold; margin: 0.6em 0; }
-        .markdown-preview p { margin: 1em 0; }
-        .markdown-preview ul { list-style-type: disc; padding-left: 2em; margin: 1em 0; }
-        .markdown-preview ol { list-style-type: decimal; padding-left: 2em; margin: 1em 0; }
-        .markdown-preview code { background: #f3f4f6; padding: 0.2em 0.4em; border-radius: 0.2em; }
-        .markdown-preview pre { background: #f3f4f6; padding: 1em; border-radius: 0.5em; overflow-x: auto; }
-        .markdown-preview blockquote { border-left: 4px solid #e5e7eb; padding-left: 1em; margin: 1em 0; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-12">
@@ -165,49 +147,34 @@
 
             <!-- Body Content -->
             <div class="section-container bg-blue-50">
-    <h3 class="section-title text-blue-800">Body Content</h3>
-    <div class="flex flex-col space-y-4">
-        <div class="flex justify-between items-center">
-            <label class="text-sm font-medium text-gray-600">Markdown Editor</label>
-            <div class="space-x-2">
-                <button onclick="insertMarkdown('**')" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300" title="Bold">B</button>
-                <button onclick="insertMarkdown('*')" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 italic" title="Italic">I</button>
-                <button onclick="insertMarkdown('`')" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 font-mono" title="Code">{}</button>
-                <button onclick="insertMarkdown('> ')" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300" title="Quote">″</button>
+                <h3 class="section-title text-blue-800">Body Content</h3>
+                <textarea id="bodyContent" rows="6" 
+                    class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"></textarea>
             </div>
-        </div>
-        <textarea id="bodyContent" rows="6" 
-            class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            oninput="updatePreview()"></textarea>
-        <div class="flex justify-between items-center">
-            <label class="text-sm font-medium text-gray-600">Preview</label>
-            <span class="text-sm text-gray-500" id="charCount">0 characters</span>
-        </div>
-        <div id="markdownPreview" class="markdown-preview"></div>
-    </div>
-</div>
 
             <!-- Output Section -->
             <div class="section-container bg-blue-50">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="section-title text-blue-800">Generated JSON</h3>
-        <div class="flex items-center space-x-6">
-            <button type="submit" form="notificationForm"
-                class="action-button bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl">
-                <span>🔄</span> Generate JSON
-            </button>
-            <button onclick="copyToClipboard()" 
-                class="action-button bg-gray-600 hover:bg-gray-700 text-white shadow-lg hover:shadow-xl">
-                <span>📋</span> Copy to Clipboard
-            </button>
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="section-title text-blue-800">Generated JSON</h3>
+                    <div class="flex gap-4">
+                        <button type="submit" form="notificationForm"
+                            class="action-button bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl">
+                            <span>🔄</span> Generate JSON
+                        </button>
+                        <button onclick="copyToClipboard()" 
+                            class="action-button bg-gray-600 hover:bg-gray-700 text-white shadow-lg hover:shadow-xl">
+                            <span>📋</span> Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <textarea id="jsonOutput" rows="12" 
+                        class="json-output w-full rounded-lg border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
+                        readonly></textarea>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="relative">
-        <textarea id="jsonOutput" rows="12" 
-            class="json-output w-full rounded-lg border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
-            readonly></textarea>
-    </div>
-</div>
 
     <script>
         function addQuestion() {
@@ -311,67 +278,6 @@
         // Add initial question and URL fields
         addQuestion();
         addUrl();
-
-     marked.setOptions({
-        breaks: true,
-        gfm: true
-    });
-
-    function updatePreview() {
-        const input = document.getElementById('bodyContent');
-        const preview = document.getElementById('markdownPreview');
-        const charCount = document.getElementById('charCount');
-        
-        // Convert line breaks to \n\n for the actual content
-        const processedContent = input.value.replace(/\n/g, '\n\n');
-        input.dataset.processedContent = processedContent;
-        
-        // Update preview
-        const renderedHtml = marked(input.value);
-        preview.innerHTML = DOMPurify.sanitize(renderedHtml);
-        
-        // Update character count
-        charCount.textContent = `${input.value.length} characters`;
-    }
-
-    function insertMarkdown(markup) {
-        const textarea = document.getElementById('bodyContent');
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-        
-        if (markup === '> ') {
-            // For blockquotes, add at start of line
-            const beforeSelection = text.substr(0, start);
-            const selection = text.substr(start, end - start);
-            const afterSelection = text.substr(end);
-            const lineStart = beforeSelection.lastIndexOf('\n') + 1;
-            
-            textarea.value = text.substr(0, lineStart) + markup + text.substr(lineStart);
-        } else {
-            // For other markup, wrap selected text
-            const selected = text.substr(start, end - start);
-            textarea.value = text.substr(0, start) + markup + selected + markup + text.substr(end);
-        }
-        
-        updatePreview();
-        textarea.focus();
-    }
-
-    // Modify the existing form submit handler to use the processed content
-    document.getElementById('notificationForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // ... (previous code remains the same until body assignment)
-        
-        const bodyContent = document.getElementById('bodyContent');
-        const body = bodyContent.dataset.processedContent || bodyContent.value.replace(/\n/g, '\n\n');
-
-        // ... (rest of the code remains the same)
-    });
-
-    // Initialize preview
-    updatePreview();   
     </script>
 </body>
 </html>
