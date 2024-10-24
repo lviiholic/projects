@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Push Notification Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto p-6">
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Push Notification Generator</h1>
+            <p class="text-gray-600 mb-6">Configure your template and generate JSON push notifications</p>
+
+            <!-- Template Configuration -->
+            <div class="mb-8 bg-blue-50 rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-blue-800 mb-4">Template Configuration</h2>
+                <form id="templateForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Platform</label>
+                        <input type="text" id="templatePlatform" value="all" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Version</label>
+                        <input type="text" id="templateVersion" value="1.0.8,1.0.9,1.1.0,1.1.1"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Type ID</label>
+                        <input type="number" id="templateTypeId" value="2"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Device IDs</label>
+                        <input type="text" id="templateDeviceIds" value="19edc84e92b066ba,A8F06E2E-F072-48B8-A532-F54FCDC02454"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Answer Type</label>
+                        <input type="text" id="templateAnswerType" value="web_search"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                </form>
+            </div>
+
+            <!-- Content Form -->
+            <form id="notificationForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Push Title</label>
+                        <input type="text" id="pushTitle" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Push Message</label>
+                        <input type="text" id="pushMessage" 
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500" required>
+                    </div>
+                </div>
+
+                <!-- Guess Questions -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="block text-lg font-medium text-gray-700">Guess Questions</label>
+                        <button type="button" onclick="addQuestion()" 
+                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                            <span class="mr-2">+</span> Add Question
+                        </button>
+                    </div>
+                    <div id="questionsContainer" class="space-y-3"></div>
+                </div>
+
+                <!-- URLs -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="block text-lg font-medium text-gray-700">URLs</label>
+                        <button type="button" onclick="addUrl()" 
+                            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                            <span class="mr-2">+</span> Add URL
+                        </button>
+                    </div>
+                    <div id="urlsContainer" class="space-y-3"></div>
+                </div>
+
+                <!-- Body Content -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <label class="block text-lg font-medium text-gray-700 mb-4">Body Content</label>
+                    <textarea id="bodyContent" rows="4" 
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500"></textarea>
+                </div>
+
+                <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-lg font-semibold transition-colors duration-200">
+                    Generate JSON
+                </button>
+            </form>
+
+            <!-- Output Section -->
+            <div class="mt-8">
+                <div class="flex justify-between items-center mb-4">
+                    <label class="block text-lg font-medium text-gray-700">Generated JSON</label>
+                    <button onclick="copyToClipboard()" 
+                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                        <span class="mr-2">📋</span> Copy to Clipboard
+                    </button>
+                </div>
+                <div class="relative">
+                    <textarea id="jsonOutput" rows="12" 
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-4 border bg-gray-50 font-mono text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500" 
+                        readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addQuestion() {
+            const container = document.getElementById('questionsContainer');
+            const div = document.createElement('div');
+            div.className = 'flex gap-2';
+            div.innerHTML = `
+                <input type="text" class="question-input mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <button type="button" onclick="removeQuestion(this)" 
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 rounded-lg transition-colors duration-200">×</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeQuestion(button) {
+            button.parentElement.remove();
+        }
+
+        function addUrl() {
+            const container = document.getElementById('urlsContainer');
+            const div = document.createElement('div');
+            div.className = 'flex gap-2';
+            div.innerHTML = `
+                <input type="text" class="url-input mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                <button type="button" onclick="removeUrl(this)" 
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 rounded-lg transition-colors duration-200">×</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeUrl(button) {
+            button.parentElement.remove();
+        }
+
+        function copyToClipboard() {
+            const jsonOutput = document.getElementById('jsonOutput');
+            jsonOutput.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const button = document.querySelector('button[onclick="copyToClipboard()"]');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="mr-2">✓</span> Copied!';
+            setTimeout(() => {
+                button.innerHTML = originalText;
+            }, 2000);
+        }
+
+        document.getElementById('notificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get template configuration
+            const templateConfig = {
+                platform: document.getElementById('templatePlatform').value,
+                version: document.getElementById('templateVersion').value,
+                type_id: parseInt(document.getElementById('templateTypeId').value),
+                device_ids: document.getElementById('templateDeviceIds').value,
+                answer_type: document.getElementById('templateAnswerType').value
+            };
+
+            // Gather form data
+            const title = document.getElementById('pushTitle').value;
+            const message = document.getElementById('pushMessage').value;
+            const body = document.getElementById('bodyContent').value;
+
+            // Gather questions
+            const questions = Array.from(document.getElementsByClassName('question-input'))
+                .map(input => input.value)
+                .filter(q => q.trim() !== '');
+
+            // Gather URLs
+            const urls = Array.from(document.getElementsByClassName('url-input'))
+                .map(input => ({
+                    url: input.value,
+                    title: "Title placeholder",
+                    snippet: "Snippet placeholder"
+                }))
+                .filter(url => url.url.trim() !== '');
+
+            // Create the JSON object using template configuration
+            const data = {
+                platform: templateConfig.platform,
+                version: templateConfig.version,
+                type_id: templateConfig.type_id,
+                device_ids: templateConfig.device_ids,
+                title: title,
+                message: message,
+                extend: {
+                    guess_question: questions,
+                    reply: {
+                        answer_type: templateConfig.answer_type,
+                        data: {
+                            header: urls.map(url => ({
+                                url: url.url,
+                                title: url.title,
+                                passage_or_snippet: url.snippet
+                            })),
+                            body: body
+                        }
+                    }
+                }
+            };
+
+            // Display the generated JSON
+            document.getElementById('jsonOutput').value = JSON.stringify(data, null, 2);
+        });
+
+        // Add initial question and URL fields
+        addQuestion();
+        addUrl();
+    </script>
+</body>
+</html>
