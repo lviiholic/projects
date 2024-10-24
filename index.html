@@ -6,306 +6,126 @@
     <title>Push Notification Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
     <style>
+        /* TailwindCSS and custom styles */
         body {
             font-family: "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
         }
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-        .input-label {
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #374151;
-        }
-        .input-field {
-            line-height: 1.6;
-            padding: 0.75rem 1rem;
-            transition: all 0.2s ease;
-        }
-        .section-container {
-            padding: 2rem;
-            margin-bottom: 2rem;
-            background-color: #f9fafb;
-            border-radius: 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 1.5rem;
-        }
-        .button-spacing {
-            margin: 0.5rem;
-        }
-        .json-output {
-            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-            line-height: 1.6;
-            padding: 1.5rem;
-        }
-        .action-button {
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 1rem;
-            transition: all 0.2s ease;
-            min-width: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-label { margin-bottom: 0.75rem; font-size: 0.95rem; font-weight: 500; color: #374151; }
+        .input-field { line-height: 1.6; padding: 0.75rem 1rem; transition: all 0.2s ease; }
+        .section-container { padding: 2rem; margin-bottom: 2rem; background-color: #f9fafb; border-radius: 1rem; }
+        .section-title { font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-bottom: 1.5rem; }
+        .button-spacing { margin: 0.5rem; }
+        .json-output { font-family: 'Monaco', 'Menlo', 'Consolas', monospace; line-height: 1.6; padding: 1.5rem; }
+        .action-button { padding: 1rem 2rem; font-size: 1.1rem; font-weight: 600; display: flex; justify-content: center; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-12">
     <div class="max-w-6xl mx-auto px-8">
         <div class="bg-white rounded-xl shadow-lg p-10 space-y-8">
-            <!-- Header -->
-            <div class="mb-12">
-                <h1 class="text-4xl font-bold text-gray-800 mb-4">Push Notification Generator</h1>
-                <p class="text-gray-600 text-lg">Configure your template and generate JSON push notifications</p>
-                <p class="mt-4 text-amber-600 flex items-center gap-2 text-lg">
-                    <span>💡</span> This is for internal use only.
-                </p>
-            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Push Notification Generator</h1>
 
-            <!-- Template Configuration -->
-            <div class="section-container bg-blue-50">
-                <h2 class="section-title text-blue-800">Template Configuration</h2>
-                <form id="templateForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="input-group">
-                        <label class="input-label">Platform</label>
-                        <input type="text" id="templatePlatform" value="all" 
-                            class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Version</label>
-                        <input type="text" id="templateVersion" value="1.0.8,1.0.9,1.1.0,1.1.1"
-                            class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Type ID</label>
-                        <input type="number" id="templateTypeId" value="2"
-                            class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Device IDs</label>
-                        <input type="text" id="templateDeviceIds" value="19edc84e92b066ba,A8F06E2E-F072-48B8-A532-F54FCDC02454"
-                            class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Answer Type</label>
-                        <input type="text" id="templateAnswerType" value="web_search"
-                            class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-                    </div>
-                </form>
-            </div>
-
-            <!-- Push Title and Message Section -->
-            <div class="section-container bg-blue-50">
-                <h2 class="section-title text-blue-800">Push Content</h2>
-                <form id="notificationForm" class="space-y-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="input-group">
-                            <label class="input-label">Push Title</label>
-                            <input type="text" id="pushTitle" 
-                                class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" required>
-                        </div>
-                        <div class="input-group">
-                            <label class="input-label">Push Message</label>
-                            <input type="text" id="pushMessage" 
-                                class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" required>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Guess Questions -->
-            <div class="section-container bg-blue-50">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="section-title text-blue-800">Guess Questions</h3>
-                    <button type="button" onclick="addQuestion()" 
-                        class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-colors duration-200 flex items-center">
-                        <span class="mr-2">+</span> Add Question
-                    </button>
-                </div>
-                <div id="questionsContainer" class="space-y-4"></div>
-            </div>
-
-            <!-- URLs -->
+            <!-- URLs Section -->
             <div class="section-container bg-blue-50">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="section-title text-blue-800">URLs</h3>
                     <button type="button" onclick="addUrl()" 
-                        class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition-colors duration-200 flex items-center">
-                        <span class="mr-2">+</span> Add URL
-                    </button>
+                        class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg">+ Add URL</button>
                 </div>
                 <div id="urlsContainer" class="space-y-4"></div>
             </div>
 
-            <!-- Body Content -->
-            <div class="section-container bg-blue-50">
-                <h3 class="section-title text-blue-800">Body Content</h3>
-                <textarea id="bodyContent" rows="6" 
-                    class="input-field w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"></textarea>
-            </div>
-
             <!-- Output Section -->
             <div class="section-container bg-blue-50">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="section-title text-blue-800">Generated JSON</h3>
-                    <div class="flex gap-4">
-                        <button type="submit" form="notificationForm"
-                            class="action-button bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl">
-                            <span>🔄</span> Generate JSON
-                        </button>
-                        <button onclick="copyToClipboard()" 
-                            class="action-button bg-gray-600 hover:bg-gray-700 text-white shadow-lg hover:shadow-xl">
-                            <span>📋</span> Copy to Clipboard
-                        </button>
-                    </div>
-                </div>
-                <div class="relative">
-                    <textarea id="jsonOutput" rows="12" 
-                        class="json-output w-full rounded-lg border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
-                        readonly></textarea>
-                </div>
+                <h3 class="section-title text-blue-800">Generated JSON</h3>
+                <textarea id="jsonOutput" rows="12" 
+                    class="json-output w-full rounded-lg border-gray-300 bg-white" readonly></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-4">
+                <button onclick="generateJson()" 
+                    class="action-button bg-blue-600 hover:bg-blue-700 text-white shadow-lg">🔄 Generate JSON</button>
+                <button onclick="copyToClipboard()" 
+                    class="action-button bg-gray-600 hover:bg-gray-700 text-white shadow-lg">📋 Copy to Clipboard</button>
             </div>
         </div>
     </div>
 
     <script>
-        function addQuestion() {
-            const container = document.getElementById('questionsContainer');
+        function addUrl() {
+            const container = document.getElementById('urlsContainer');
             const div = document.createElement('div');
             div.className = 'flex gap-4';
             div.innerHTML = `
-                <input type="text" class="question-input input-field flex-grow rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
-                <button type="button" onclick="removeQuestion(this)" 
-                    class="bg-red-500 hover:bg-red-600 text-white px-6 rounded-lg transition-colors duration-200">×</button>
+                <input type="text" class="url-input input-field flex-grow rounded-lg" 
+                       placeholder="Enter URL" onblur="fetchUrlInfo(this)">
+                <input type="text" class="url-title input-field flex-grow rounded-lg" placeholder="Title" readonly>
+                <input type="text" class="url-snippet input-field flex-grow rounded-lg" placeholder="Snippet" readonly>
+                <button type="button" onclick="removeUrl(this)" 
+                        class="bg-red-500 hover:bg-red-600 text-white px-6 rounded-lg">×</button>
             `;
             container.appendChild(div);
         }
 
-        function removeQuestion(button) {
-            button.parentElement.remove();
+        async function fetchUrlInfo(inputElement) {
+            const url = inputElement.value.trim();
+            if (!url || !/^https?:\/\//.test(url)) {
+                alert('Please enter a valid URL');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://small-projects-dnrhc6ger-hollys-projects-9ac86282.vercel.app', { // Adjust to your backend URL
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+
+                const titleInput = inputElement.nextElementSibling;
+                const snippetInput = titleInput.nextElementSibling;
+
+                titleInput.value = data.title || 'No title available';
+                snippetInput.value = data.snippet || 'No snippet available';
+
+            } catch (error) {
+                console.error('Error fetching URL info:', error);
+                alert('Failed to fetch URL information');
+            }
         }
-
-        function addUrl() {
-    const container = document.getElementById('urlsContainer');
-    const div = document.createElement('div');
-    div.className = 'flex gap-4';
-    div.innerHTML = `
-        <input type="text" class="url-input input-field flex-grow rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
-               placeholder="Enter URL" onblur="fetchUrlInfo(this)">
-        <input type="text" class="url-title input-field flex-grow rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
-               placeholder="Title" readonly>
-        <input type="text" class="url-snippet input-field flex-grow rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" 
-               placeholder="Snippet" readonly>
-        <button type="button" onclick="removeUrl(this)" 
-                class="bg-red-500 hover:bg-red-600 text-white px-6 rounded-lg transition-colors duration-200">×</button>
-    `;
-    container.appendChild(div);
-}
-
-async function fetchUrlInfo(inputElement) {
-    const url = inputElement.value;
-    if (!url.trim()) return;
-
-    try {
-        const response = await fetch('/fetch-url-info', { // Change '/fetch-url-info' to your backend endpoint
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ url })
-        });
-        const data = await response.json();
-
-        const titleInput = inputElement.nextElementSibling;
-        const snippetInput = titleInput.nextElementSibling;
-
-        titleInput.value = data.title || 'No title available';
-        snippetInput.value = data.snippet || 'No snippet available';
-    } catch (error) {
-        console.error('Error fetching URL info:', error);
-    }
-}
 
         function removeUrl(button) {
             button.parentElement.remove();
+        }
+
+        function generateJson() {
+            const urls = Array.from(document.getElementsByClassName('url-input'))
+                .map(input => ({
+                    url: input.value,
+                    title: input.nextElementSibling.value,
+                    snippet: input.nextElementSibling.nextElementSibling.value
+                }))
+                .filter(url => url.url.trim() !== '');
+
+            const data = {
+                urls: urls
+            };
+
+            document.getElementById('jsonOutput').value = JSON.stringify(data, null, 2);
         }
 
         function copyToClipboard() {
             const jsonOutput = document.getElementById('jsonOutput');
             jsonOutput.select();
             document.execCommand('copy');
-            
-            const button = document.querySelector('button[onclick="copyToClipboard()"]');
-            const originalText = button.innerHTML;
-            button.innerHTML = '<span>✓</span> Copied!';
-            setTimeout(() => {
-                button.innerHTML = originalText;
-            }, 2000);
+            alert('JSON copied to clipboard');
         }
 
-        document.getElementById('notificationForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const templateConfig = {
-        platform: document.getElementById('templatePlatform').value,
-        version: document.getElementById('templateVersion').value,
-        type_id: parseInt(document.getElementById('templateTypeId').value),
-        device_ids: document.getElementById('templateDeviceIds').value,
-        answer_type: document.getElementById('templateAnswerType').value
-    };
-
-    const title = document.getElementById('pushTitle').value;
-    const message = document.getElementById('pushMessage').value;
-    const body = document.getElementById('bodyContent').value;
-
-    const questions = Array.from(document.getElementsByClassName('question-input'))
-        .map(input => input.value)
-        .filter(q => q.trim() !== '');
-
-    const urls = Array.from(document.getElementsByClassName('url-input'))
-        .map(input => ({
-            url: input.value,
-            title: input.nextElementSibling.value,
-            snippet: input.nextElementSibling.nextElementSibling.value
-        }))
-        .filter(url => url.url.trim() !== '');
-
-    const data = {
-        platform: templateConfig.platform,
-        version: templateConfig.version,
-        type_id: templateConfig.type_id,
-        device_ids: templateConfig.device_ids,
-        title: title,
-        message: message,
-        extend: {
-            guess_question: questions,
-            reply: {
-                answer_type: templateConfig.answer_type,
-                data: {
-                    header: urls.map(url => ({
-                        url: url.url,
-                        title: url.title,
-                        passage_or_snippet: url.snippet
-                    })),
-                    body: body
-                }
-            }
-        }
-    };
-
-    document.getElementById('jsonOutput').value = JSON.stringify(data, null, 2);
-});
-
-        // Add initial question and URL fields
-        addQuestion();
+        // Initialize with one URL field
         addUrl();
     </script>
 </body>
